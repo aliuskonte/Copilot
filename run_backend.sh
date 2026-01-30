@@ -10,7 +10,11 @@ if [ -f .env ]; then
   [ -n "$val" ] && PORT="$val"
 fi
 
-lsof -ti:$PORT | xargs kill 2>/dev/null || true
-sleep 1
+for _ in 1 2 3; do
+  pids=$(lsof -nti:$PORT 2>/dev/null) || true
+  [ -z "$pids" ] && break
+  echo "$pids" | xargs kill -9 2>/dev/null || true
+  sleep 2
+done
 
 pipenv run python run_backend.py
