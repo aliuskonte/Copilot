@@ -135,7 +135,8 @@ class MainWindow(QMainWindow):
         self._process_auto()
 
     def _get_audio_to_process(self) -> bytes | None:
-        """Возвращает WAV для обработки: VAD-сегмент или полный буфер."""
+        """Возвращает WAV для обработки: только VAD-сегмент с речью.
+        Тишину не отправляем — Whisper галлюцинирует (you, Thanks for watching)."""
         raw = self._recorder.get_buffer_raw()
         if not raw or len(raw) < SAMPLE_RATE * 2:
             return None
@@ -143,7 +144,7 @@ class MainWindow(QMainWindow):
         segment = get_last_speech_segment(raw, min_speech_sec=min_sec)
         if segment:
             return bytes_to_wav(segment)
-        return self._recorder.get_buffer_as_wav()
+        return None
 
     def _process_auto(self) -> None:
         """Автообработка: дебаунс, rate limit, отправка."""
@@ -184,7 +185,7 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(
                 self,
                 "Нет данных",
-                "Буфер пуст или слишком короткий. Подождите несколько секунд и попробуйте снова.",
+                "Речь не обнаружена в буфере. Подождите, пока собеседник заговорит, и попробуйте снова.",
             )
             return
         self._process_btn.setEnabled(False)
