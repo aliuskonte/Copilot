@@ -216,7 +216,7 @@ class MainWindow(QMainWindow):
         self._question_edit.setPlainText(question or transcript or "(не вопрос)")
         self._answer_edit.setPlainText(answer or "(вопрос не обнаружен)")
         total_ms = timing.get("total_ms")
-        status = f"Готово ({total_ms} мс)" if total_ms is not None else "Готово"
+        status = f"Готово ({total_ms / 1000:.2f} сек)" if total_ms is not None else "Готово"
         self._status.showMessage(status)
 
     def closeEvent(self, event) -> None:

@@ -5,6 +5,8 @@ from copilot.schemas.processing import (
     AnswerResponse,
     ProcessResponse,
     ProcessTiming,
+    ProcessTranscriptRequest,
+    ProcessTranscriptResponse,
     TranscribeResponse,
 )
 
@@ -13,5 +15,7 @@ __all__ = [
     "AnswerResponse",
     "ProcessResponse",
     "ProcessTiming",
+    "ProcessTranscriptRequest",
+    "ProcessTranscriptResponse",
     "TranscribeResponse",
 ]

@@ -11,6 +11,8 @@ from copilot.schemas import (
     AnswerResponse,
     ProcessResponse,
     ProcessTiming,
+    ProcessTranscriptRequest,
+    ProcessTranscriptResponse,
     TranscribeResponse,
 )
 from copilot.services import llm_service, transcription_service
@@ -39,6 +41,27 @@ async def transcribe_audio(audio: UploadFile = File(...)) -> TranscribeResponse:
     except Exception as e:
         logger.exception("Transcription failed")
         raise HTTPException(status_code=502, detail="Transcription failed") from e
+
+
+@router.post("/process-transcript", response_model=ProcessTranscriptResponse)
+async def process_transcript(request: ProcessTranscriptRequest) -> ProcessTranscriptResponse:
+    """Обрабатывает транскрипт: определяет вопрос, отвечает. Без транскрибации."""
+    if not request.transcript.strip():
+        return ProcessTranscriptResponse(question=None, answer=None, llm_ms=0)
+    t0 = time.perf_counter()
+    try:
+        is_q, answer = await llm_service.process_question_or_answer(request.transcript)
+        llm_ms = int((time.perf_counter() - t0) * 1000)
+        if not is_q:
+            return ProcessTranscriptResponse(question=None, answer=None, llm_ms=llm_ms)
+        return ProcessTranscriptResponse(
+            question=request.transcript,
+            answer=answer or "",
+            llm_ms=llm_ms,
+        )
+    except Exception as e:
+        logger.exception("Process transcript failed")
+        raise HTTPException(status_code=502, detail="Processing failed") from e
 
 
 @router.post("/answer", response_model=AnswerResponse)

@@ -15,6 +15,20 @@ class AnswerRequest(BaseModel):
     question: str = Field(..., min_length=1, description="Вопрос собеседника")
 
 
+class ProcessTranscriptRequest(BaseModel):
+    """Запрос на обработку транскрипта (вопрос? + ответ)."""
+
+    transcript: str = Field(..., min_length=1, description="Транскрибированный текст")
+
+
+class ProcessTranscriptResponse(BaseModel):
+    """Результат обработки транскрипта."""
+
+    question: str | None = Field(None, description="Выделенный вопрос или None")
+    answer: str | None = Field(None, description="Ответ LLM или None, если не вопрос")
+    llm_ms: int = Field(0, description="Время вызова LLM в мс")
+
+
 class AnswerResponse(BaseModel):
     """Ответ LLM на вопрос."""
 
