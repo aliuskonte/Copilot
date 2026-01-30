@@ -38,23 +38,28 @@ cp .env.example .env
 
 ## Запуск
 
-### Терминал 1 — Backend
+### Вариант 1: Единый скрипт (рекомендуется)
+
+Освобождает порт, запускает backend и desktop. Не возникает ошибка «Address already in use»:
 
 ```bash
-pipenv run python run_backend.py
+./run.sh
 ```
 
-Или:
+### Вариант 2: Два терминала
 
+**Терминал 1 — Backend:**
 ```bash
-pipenv run uvicorn copilot.main:app --reload --host 127.0.0.1 --port 8000
+./run_backend.sh
+# или: pipenv run python run_backend.py
 ```
 
-### Терминал 2 — Desktop-клиент
-
+**Терминал 2 — Desktop:**
 ```bash
 pipenv run python run_desktop.py
 ```
+
+`run_backend.sh` освобождает порт перед стартом.
 
 ## Использование
 
