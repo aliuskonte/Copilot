@@ -84,6 +84,7 @@ class TestProcess:
             assert data["transcript"] == ""
             assert data["question"] is None
             assert data["answer"] is None
+            assert "timing" in data
 
     @pytest.mark.asyncio
     async def test_process_not_question(
@@ -95,7 +96,7 @@ class TestProcess:
             "copilot.routers.processing_routes.llm_service"
         ) as mock_llm:
             mock_trans.transcribe = AsyncMock(return_value="Просто утверждение")
-            mock_llm.is_question = AsyncMock(return_value=False)
+            mock_llm.process_question_or_answer = AsyncMock(return_value=(False, None))
             response = client.post(
                 "/api/v1/process",
                 files={"audio": ("audio.wav", test_wav, "audio/wav")},
@@ -105,6 +106,7 @@ class TestProcess:
             assert data["transcript"] == "Просто утверждение"
             assert data["question"] is None
             assert data["answer"] is None
+            assert "timing" in data
 
     @pytest.mark.asyncio
     async def test_process_question(
@@ -116,8 +118,9 @@ class TestProcess:
             "copilot.routers.processing_routes.llm_service"
         ) as mock_llm:
             mock_trans.transcribe = AsyncMock(return_value="Какой день?")
-            mock_llm.is_question = AsyncMock(return_value=True)
-            mock_llm.answer_question = AsyncMock(return_value="Понедельник")
+            mock_llm.process_question_or_answer = AsyncMock(
+                return_value=(True, "Понедельник")
+            )
             response = client.post(
                 "/api/v1/process",
                 files={"audio": ("audio.wav", test_wav, "audio/wav")},
@@ -127,6 +130,7 @@ class TestProcess:
             assert data["transcript"] == "Какой день?"
             assert data["question"] == "Какой день?"
             assert data["answer"] == "Понедельник"
+            assert "timing" in data
 
     def test_process_empty_file_returns_400(self, client) -> None:
         response = client.post(

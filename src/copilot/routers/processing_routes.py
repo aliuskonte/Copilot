@@ -2,10 +2,17 @@
 
 import io
 import logging
+import time
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
-from copilot.schemas import AnswerRequest, AnswerResponse, ProcessResponse, TranscribeResponse
+from copilot.schemas import (
+    AnswerRequest,
+    AnswerResponse,
+    ProcessResponse,
+    ProcessTiming,
+    TranscribeResponse,
+)
 from copilot.services import llm_service, transcription_service
 
 router = APIRouter(prefix="/api/v1", tags=["processing"])
@@ -56,18 +63,35 @@ async def process_audio(audio: UploadFile = File(...)) -> ProcessResponse:
         )
     if len(content) == 0:
         raise HTTPException(status_code=400, detail="Empty audio file")
+    t0 = time.perf_counter()
     try:
+        t1 = time.perf_counter()
         transcript = await transcription_service.transcribe(content)
+        transcribe_ms = int((time.perf_counter() - t1) * 1000)
         if not transcript.strip():
-            return ProcessResponse(transcript="", question=None, answer=None)
-        is_q = await llm_service.is_question(transcript)
+            total_ms = int((time.perf_counter() - t0) * 1000)
+            return ProcessResponse(
+                transcript="",
+                question=None,
+                answer=None,
+                timing=ProcessTiming(transcribe_ms=transcribe_ms, llm_ms=0, total_ms=total_ms),
+            )
+        t2 = time.perf_counter()
+        is_q, answer = await llm_service.process_question_or_answer(transcript)
+        llm_ms = int((time.perf_counter() - t2) * 1000)
+        total_ms = int((time.perf_counter() - t0) * 1000)
         if not is_q:
-            return ProcessResponse(transcript=transcript, question=None, answer=None)
-        answer = await llm_service.answer_question(transcript)
+            return ProcessResponse(
+                transcript=transcript,
+                question=None,
+                answer=None,
+                timing=ProcessTiming(transcribe_ms=transcribe_ms, llm_ms=llm_ms, total_ms=total_ms),
+            )
         return ProcessResponse(
             transcript=transcript,
             question=transcript,
-            answer=answer,
+            answer=answer or "",
+            timing=ProcessTiming(transcribe_ms=transcribe_ms, llm_ms=llm_ms, total_ms=total_ms),
         )
     except Exception as e:
         logger.exception("Process failed")

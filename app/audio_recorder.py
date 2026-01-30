@@ -12,7 +12,7 @@ SAMPLE_RATE = 16000
 CHANNELS = 1
 FORMAT = pyaudio.paInt16
 CHUNK = 1024
-BUFFER_SECONDS = 30
+BUFFER_SECONDS = 15
 
 
 def find_blackhole_device(p: pyaudio.PyAudio) -> int | None:

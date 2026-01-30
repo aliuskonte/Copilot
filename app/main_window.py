@@ -80,7 +80,7 @@ class MainWindow(QMainWindow):
         self._answer_edit.setReadOnly(True)
         layout.addWidget(self._answer_edit)
 
-        self._process_btn = QPushButton("Обработать последние 30 сек")
+        self._process_btn = QPushButton("Обработать последние 15 сек")
         self._process_btn.clicked.connect(self._on_process)
         self._process_btn.setMinimumHeight(44)
         layout.addWidget(self._process_btn)
@@ -143,9 +143,12 @@ class MainWindow(QMainWindow):
         transcript = result.get("transcript", "")
         question = result.get("question")
         answer = result.get("answer")
+        timing = result.get("timing", {})
         self._question_edit.setPlainText(question or transcript or "(не вопрос)")
         self._answer_edit.setPlainText(answer or "(вопрос не обнаружен)")
-        self._status.showMessage("Готово")
+        total_ms = timing.get("total_ms")
+        status = f"Готово ({total_ms} мс)" if total_ms is not None else "Готово"
+        self._status.showMessage(status)
 
     def closeEvent(self, event) -> None:
         self._recorder.close()
