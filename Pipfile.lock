@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "2e313d5df145a6f17c9e89fc285dfb3c641ad840c11253a0a9491ea973f7b271"
+            "sha256": "c1c3ae83b6b2b40b2739fecad0964c571b23221710483e3980d01ccadb58f2f0"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -588,6 +588,15 @@
             "markers": "python_version >= '3.8'",
             "version": "==6.0.3"
         },
+        "setuptools": {
+            "hashes": [
+                "sha256:8b0e9d10c784bf7d262c4e5ec5d4ec94127ce206e8738f29a437945fbc219b70",
+                "sha256:95b30ddfb717250edb492926c92b5221f7ef3fbcc2b07579bcd4a27da21d0173"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.9'",
+            "version": "==80.10.2"
+        },
         "sniffio": {
             "hashes": [
                 "sha256:2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2",
@@ -808,6 +817,13 @@
             ],
             "markers": "python_version >= '3.9'",
             "version": "==1.1.1"
+        },
+        "webrtcvad": {
+            "hashes": [
+                "sha256:f1bed2fb25b63fb7b1a55d64090c993c9c9167b28485ae0bcdd81cf6ede96aea"
+            ],
+            "index": "pypi",
+            "version": "==2.0.10"
         },
         "websockets": {
             "hashes": [

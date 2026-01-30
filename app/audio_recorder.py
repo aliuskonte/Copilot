@@ -106,13 +106,17 @@ class AudioRecorder:
             self._thread.join(timeout=2)
             self._thread = None
 
-    def get_buffer_as_wav(self) -> bytes | None:
-        """Возвращает содержимое буфера как WAV или None, если буфер пуст."""
+    def get_buffer_raw(self) -> bytes | None:
+        """Возвращает сырые PCM-байты буфера или None, если пуст."""
         with self._lock:
             if not self._buffer:
                 return None
-            raw = b"".join(self._buffer)
-        if len(raw) < SAMPLE_RATE:  # минимум ~1 сек
+            return b"".join(self._buffer)
+
+    def get_buffer_as_wav(self) -> bytes | None:
+        """Возвращает содержимое буфера как WAV или None, если буфер пуст."""
+        raw = self.get_buffer_raw()
+        if not raw or len(raw) < SAMPLE_RATE:  # минимум ~1 сек
             return None
         return bytes_to_wav(raw)
 
