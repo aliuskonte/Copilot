@@ -67,7 +67,16 @@ pipenv run python run_desktop.py
 
 - `POST /api/v1/transcribe` — транскрибация аудио (Whisper)
 - `POST /api/v1/answer` — ответ на вопрос (GPT)
-- `POST /api/v1/process` — транскрибация + определение вопроса + ответ (всё в одном)
+- `POST /api/v1/process` — транскрибация + определение вопроса + ответ (всё в одном). Возвращает `timing`: `transcribe_ms`, `llm_ms`, `total_ms`
+
+## Бенчмарк скорости
+
+```bash
+# Backend должен быть запущен
+pipenv run python tools/benchmark_process.py -s 5 -n 3
+# -s 5: 5 сек аудио
+# -n 3: 3 запуска
+```
 
 ## Структура проекта
 
