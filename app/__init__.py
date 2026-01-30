@@ -1,0 +1,1 @@
+"""Desktop-клиент Copilot."""
